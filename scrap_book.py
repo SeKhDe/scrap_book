@@ -27,14 +27,15 @@ def extraire_donnees(url):
     tds = table.find_all("td")
     price_including_tax= tds[3].text
 
-
     price_excluding_tax = tds[2].text
 
-
     number_available = tds[5].text
-    print(number_available)
 
-    
+    product_description_article = soup.find("article", class_="product_page")
+    product_description = product_description_article.find("p",recursive=None).text
+    print(product_description)
+
+
 
 
 
