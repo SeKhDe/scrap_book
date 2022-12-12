@@ -11,16 +11,30 @@ def extraire_donnees(url):
         html = response.content
         soup = BeautifulSoup(html, "html.parser")
 
-    infos_livre = [ "product_page_url", "upc"," title", "price_including_tax", "price_excluding_tax",
-                    "number_available",  "product_description", "category", "review_rating", "image_url"]
+    en_tete = ["product_page_url", "upc", " title", "price_including_tax", "price_excluding_tax",
+                   "number_available", "product_description", "category", "review_rating", "image_url"]
 
 
-    upc_table = soup.find("table" ,class_= "table")
-    upc =  upc_table.find("td").text
+
+    table = soup.find("table" ,class_= "table")
+    upc =  table.find("td").text
+
+    title = soup.find("h1").text
+    print(title)
+
+    table = soup.find("table", class_="table")
+    price_including_tax = table.find("td").text
+    print(upc)
+
+    table = soup.find("table", class_="table")
+    upc = table.find("td").text
     print(upc)
 
 
 
 
+
+    infos_livre = [ "product_page_url", upc," title", "price_including_tax", "price_excluding_tax",
+                    "number_available",  "product_description", "category", "review_rating", "image_url"]
 extraire_donnees(BASE_URL + LIVRE_1)
     
