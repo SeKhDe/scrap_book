@@ -19,16 +19,20 @@ def extraire_donnees(url):
     table = soup.find("table" ,class_= "table")
     upc =  table.find("td").text
 
+
     title = soup.find("h1").text
-    print(title)
+
 
     table = soup.find("table", class_="table")
-    price_including_tax = table.find("td").text
-    print(upc)
+    tds = table.find_all("td")
+    price_including_tax= tds[3].text
+    print(price_including_tax)
 
-    table = soup.find("table", class_="table")
-    upc = table.find("td").text
-    print(upc)
+    price_excluding_tax = tds[2].text
+    print(price_excluding_tax)
+
+    
+
 
 
 
