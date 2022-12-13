@@ -37,7 +37,17 @@ def extraire_donnees(url):
     ul_breadcrumb = soup.find("ul", class_="breadcrumb")
     categorys = ul_breadcrumb.find_all("li")
     category = categorys[2].text
-    
+
+
+    div_product = soup.find("div",class_="product_main")
+    p_start_rating = div_product.find("p", class_="star-rating")
+    review_rating = p_start_rating.attrs["class"][1]
+
+
+    div_item = soup.find("div", class_="item")
+    balise_img = div_item.find("img")
+    image_url_src = balise_img["src"]
+    image_url = image_url_src.replace("../../", BASE_URL)
 
 
 
@@ -52,7 +62,10 @@ def extraire_donnees(url):
 
 
 
-    infos_livre = [ "product_page_url", upc," title", "price_including_tax", "price_excluding_tax",
-                    "number_available",  "product_description", "category", "review_rating", "image_url"]
+
+
+
+    infos_livre = [ product_page_url, upc, title, price_including_tax, price_excluding_tax,
+                    number_available,  product_description, category, review_rating, image_url]
 extraire_donnees(BASE_URL + LIVRE_1)
     
