@@ -33,7 +33,14 @@ def extraire_donnees(url):
 
     product_description_article = soup.find("article", class_="product_page")
     product_description = product_description_article.find("p",recursive=None).text
-    print(product_description)
+
+    ul_breadcrumb = soup.find("ul", class_="breadcrumb")
+    categorys = ul_breadcrumb.find_all("li")
+    category = categorys[2].text
+    
+
+
+
 
 
 
