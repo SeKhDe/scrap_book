@@ -21,7 +21,7 @@ category_s= []
 review_rating_s = []
 image_url_s= []
 
-
+#boucle des pages de la categorie fiction
 for i in range(1,5):
     url_category_fiction = f"http://books.toscrape.com/catalogue/category/books/fiction_10/page-{i}.html"
     urls_category_fiction.append(url_category_fiction)
@@ -30,6 +30,7 @@ for i in range(1,5):
     if response.status_code == 200:
         html = response.content
         soup = BeautifulSoup(html, "html.parser")
+
 
     liste_url = []
     li_class = soup.find("ol", class_="row").find_all("li","col-xs-6")
@@ -94,4 +95,3 @@ for i in range(1,5):
 
 
 
-print(len(titles))
