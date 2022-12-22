@@ -6,10 +6,10 @@ import pandas as pd
 
 BASE_URL = "http://books.toscrape.com/"
 BASE_URL_category = "http://books.toscrape.com/catalogue/"
-url_fiction = "http://books.toscrape.com/catalogue/category/books/fiction_10/"
-
-
-
+url_fiction = "http://books.toscrape.com/catalogue/category/books/fiction_10/index.html"
+url_romance = "http://books.toscrape.com/catalogue/category/books/romance_8/index.html"
+url_travel = "http://books.toscrape.com/catalogue/category/books/travel_2/index.html"
+url_mistery = "http://books.toscrape.com/catalogue/category/books/mystery_3/index.html"
 #Fonction extraction d'une categorie
 
 def extract_category(url):
@@ -18,31 +18,40 @@ def extract_category(url):
     liste_url_category = []
     extr = []
     while page:
-        url_category = f"{url}page-{i}.html"
+        url_category = url
         response = requests.get(url_category)
         if response.status_code == 200:
+
             html = response.content
             soup = BeautifulSoup(html, "html.parser")
-            i += 1
+
+            if i == 1:
+                url = url.rstrip("index.html")
+                url = url + f"page-{i+1}.html"
+            else:
+                index = url.index("page")
+                url = url[:index]
+                url += f"page-{i}.html"
+
+
+            i+= 1
+
+
+            ol_class = soup.find("ol", class_="row")
+            li_class = ol_class.find_all("li", class_="col-xs-6")
+            for li in li_class:
+                a = li.find("a")
+                a = BASE_URL_category + a["href"].replace("../../../", "")
+                if not a in liste_url_category:
+                   liste_url_category.append(a)
+                   ex = extract_book(a)
+                   extr.append(ex)
+
+
+
+
         else:
             page = False
-
-
-
-        ol_class = soup.find("ol", class_="row")
-        li_class = ol_class.find_all("li", class_="col-xs-6")
-        for li in li_class:
-            a = li.find("a")
-            a = BASE_URL_category + a["href"].replace("../../../", "")
-            if not a in liste_url_category:
-                liste_url_category.append(a)
-
-
-        for url_page in liste_url_category:
-            ex = extract_book(url_page)
-            extr.append(ex)
-
-
 
     return extr
 
@@ -99,3 +108,6 @@ def extract_book(url):
 
 
 
+
+print(len(extract_category(url_fiction)))
+print(extract_category(url_fiction))
