@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+import csv
 
 
 
@@ -10,9 +11,11 @@ url_fiction = "http://books.toscrape.com/catalogue/category/books/fiction_10/ind
 url_romance = "http://books.toscrape.com/catalogue/category/books/romance_8/index.html"
 url_travel = "http://books.toscrape.com/catalogue/category/books/travel_2/index.html"
 url_mistery = "http://books.toscrape.com/catalogue/category/books/mystery_3/index.html"
+url_book_sharp = "http://books.toscrape.com/catalogue/sharp-objects_997/index.html"
 #Fonction extraction d'une categorie
 
 def extract_category(url):
+
     page = True
     i = 1
     liste_url_category = []
@@ -53,6 +56,7 @@ def extract_category(url):
         else:
             page = False
 
+
     return extr
 
 
@@ -82,11 +86,11 @@ def extract_book(url):
     number_available = tds[5].text
 
     product_description_article = soup.find("article", class_="product_page")
-    product_description = product_description_article.find("p", recursive=None)
+    product_description = product_description_article.find("p", recursive=None).text
 
     ul_breadcrumb = soup.find("ul", class_="breadcrumb")
     categorys = ul_breadcrumb.find_all("li")
-    category = categorys[2].text
+    category = categorys[2].text.strip("\n")
 
     div_product = soup.find("div", class_="product_main")
     p_start_rating = div_product.find("p", class_="star-rating")
@@ -97,17 +101,29 @@ def extract_book(url):
     image_url_src = balise_img["src"]
     image_url = image_url_src.replace("../../", BASE_URL_category)
 
-    infos_livre = {"product_page_url": product_page_url, "upc": upc, "title": title,
-                   "price_including_tax": price_including_tax, "price_excluding_tax": price_excluding_tax,
-                   "number_available": number_available, "product_description": product_description,
-                   "category": category, "review_rating": review_rating,
-                   "image_url": image_url}
+    en_tete = ["product_page_url","upc","title","price_including_tax","price_excluding_tax","number_available",
+               "category","review_rating","image_url","product_description"]
+
+    infos_livre = [product_page_url, upc, title,
+                    price_including_tax, price_excluding_tax,number_available,
+                    category,review_rating,
+                   image_url, product_description]
+
 
 
     return infos_livre
 
+infos_book = extract_book(url_book_sharp)
+infos_category = extract_category(url_travel)
 
+en_tete = ["product_page_url","upc","title","price_including_tax","price_excluding_tax","number_available",
+               "category","review_rating","image_url","product_description"]
 
+with open("dat.csv","w") as f:
+    writer = csv.writer(f, delimiter=",")
+    writer.writerow(en_tete)
 
-print(len(extract_category(url_fiction)))
-print(extract_category(url_fiction))
+    for a,b,c,d,e,f,g,h,i,j in infos_category:
+
+        ligne = [a,b,c,d,e,f,g,h,i,j]
+        writer.writerow(ligne)
