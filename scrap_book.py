@@ -14,11 +14,38 @@ url_mistery = "http://books.toscrape.com/catalogue/category/books/mystery_3/inde
 url_book_sharp = "http://books.toscrape.com/catalogue/sharp-objects_997/index.html"
 
 
+#----------------------Fonction extraction site ---------------------------------------------
+def extract_site():
+    url = "http://books.toscrape.com/"
+    response = requests.get(url)
+    if response.status_code == 200:
+        html = response.content
+        soup = BeautifulSoup(html, "html.parser")
+
+    else:
+        return print(f"Erreur de la requete numero {response.status_code}")
 
 
+    liste_liens_category = []
+    extract_total = []
+    site_categories = soup.find("div", class_="side_categories")
+    ul_side_categories = site_categories.find("ul", class_="nav")
+    ul_ = ul_side_categories.find("ul")
+    li_ = ul_.find_all("li")
+    for li in li_:
 
-#Fonction extraction d'une categorie
+        a_ = li.find("a")
+        a_ = a_["href"]
 
+        liste_liens_category.append(url + a_)
+    for liste in liste_liens_category:
+        ext = extract_category(liste)
+        extract_total.append(ext)
+
+    return extract_total
+
+
+#----------------------Fonction extraction d'une categorie---------------------------------------
 def extract_category(url):
 
     page = True
@@ -68,7 +95,7 @@ def extract_category(url):
 
 
 
-#Fonction extraction d'un livre
+#------------------------Fonction extraction d'un livre----------------------------------------
 def extract_book(url):
     response = requests.get(url)
     if response.status_code == 200:
@@ -91,7 +118,8 @@ def extract_book(url):
     number_available = tds[5].text
 
     product_description_article = soup.find("article", class_="product_page")
-    product_description = product_description_article.find("p", recursive=None).text
+    product_description = product_description_article.find("p", recursive=None)
+
 
     ul_breadcrumb = soup.find("ul", class_="breadcrumb")
     categorys = ul_breadcrumb.find_all("li")
@@ -104,7 +132,7 @@ def extract_book(url):
     div_item = soup.find("div", class_="item")
     balise_img = div_item.find("img")
     image_url_src = balise_img["src"]
-    image_url = image_url_src.replace("../../", BASE_URL_category)
+    image_url = image_url_src.replace("../../", BASE_URL)
 
     en_tete = ["product_page_url","upc","title","price_including_tax","price_excluding_tax","number_available",
                "category","review_rating","image_url","product_description"]
@@ -118,8 +146,9 @@ def extract_book(url):
 
     return infos_livre
 
-infos_book = extract_book(url_book_sharp)
-infos_category = extract_category(url_travel)
 
-cfc.load_file_category(extract_category(url_travel))
+info = extract_site()
+
+cfc.load_file_category(info)
+
 
