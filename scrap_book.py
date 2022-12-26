@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import csv
-import chargement_fichier_csv as cfc
+import os
 
 
 
@@ -97,6 +97,9 @@ def extract_category(url):
 
 #------------------------Fonction extraction d'un livre----------------------------------------
 def extract_book(url):
+    en_tete = ["product_page_url", "upc", "title", "price_including_tax", "price_excluding_tax", "number_available",
+               "category", "review_rating", "image_url", "product_description"]
+
     response = requests.get(url)
     if response.status_code == 200:
         html = response.content
@@ -147,8 +150,9 @@ def extract_book(url):
     return infos_livre
 
 
-info = extract_site()
+info = extract_category(url_travel)
 
-cfc.load_file_category(info)
+for i in info:
+    print(i)
 
 
