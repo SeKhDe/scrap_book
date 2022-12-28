@@ -7,11 +7,7 @@ import os
 
 BASE_URL = "http://books.toscrape.com/"
 BASE_URL_category = "http://books.toscrape.com/catalogue/"
-url_fiction = "http://books.toscrape.com/catalogue/category/books/fiction_10/index.html"
-url_romance = "http://books.toscrape.com/catalogue/category/books/romance_8/index.html"
-url_travel = "http://books.toscrape.com/catalogue/category/books/travel_2/index.html"
-url_mistery = "http://books.toscrape.com/catalogue/category/books/mystery_3/index.html"
-url_book_sharp = "http://books.toscrape.com/catalogue/sharp-objects_997/index.html"
+
 
 
 #----------------------Fonction extraction site ---------------------------------------------
