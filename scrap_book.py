@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import csv
 import os
-# coding: <encoding>
+
 
 
 BASE_URL = "http://books.toscrape.com/"
@@ -46,7 +46,7 @@ def extract_site():
         ext = extract_category(liste)
         nom_fichier = liste.split("/")[6]
         extract_total.append(ext)
-
+# ----------- Charagement du fichier csv -------------
         os.makedirs("data_site", exist_ok=True)
         with open(f"data_site\{nom_fichier}.csv", "w", encoding="utf-8") as f:
             writer = csv.writer(f,delimiter=",")
@@ -150,6 +150,16 @@ def extract_book(url):
     balise_img = div_item.find("img")
     image_url_src = balise_img["src"]
     image_url = image_url_src.replace("../../", BASE_URL)
+    os.makedirs("image", exist_ok=True)
+    response_img = requests.get(image_url)
+    # ----------- decoupe l'url et recupere la derniere parti pour en faire le nom de l'image -------------
+    nom_img = image_url.split("/")[-1]
+    if response_img.status_code == 200:
+        with open(f"image\{nom_img}", "wb") as f:
+            f.write(response_img.content)
+    else:
+        print(f"ERREUR, la requete de l'image a echoué, numéro {response_img}")
+
 
 
 
@@ -164,6 +174,9 @@ def extract_book(url):
     return infos_livre
 
 
-infos_cate = extract_site()
+extract_site()
+
+
+
 
 
