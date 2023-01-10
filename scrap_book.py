@@ -142,7 +142,7 @@ def extract_book(url):
     image_url = title
 
     filtre = filtered_string = re.sub(r'[^a-zA-Z0-9 ]', '', image_url)
-    nom_img = filtre
+    nom_img = filtre + ".jpg"
     if response_img.status_code == 200:
         with open(f"image\{nom_img}", "wb") as f:
             f.write(response_img.content)
