@@ -2,17 +2,20 @@ import requests
 from bs4 import BeautifulSoup
 import csv
 import os
+import re
 
-
-
+travel_category = "http://books.toscrape.com/catalogue/category/books/travel_2/index.html"
+mistery_category = "http://books.toscrape.com/catalogue/category/books/mystery_3/index.html"
+historical_fiction = "http://books.toscrape.com/catalogue/category/books/historical-fiction_4/index.html"
 BASE_URL = "http://books.toscrape.com/"
 BASE_URL_category = "http://books.toscrape.com/catalogue/"
 
 
-
-#----------------------Fonction extraction site ---------------------------------------------
+# ----------------------Fonction extraction site ---------------------------------------------
 def extract_site():
-    en_tete = ["product_page_url", "upc", "title", "price_including_tax", "price_excluding_tax", "number_available",
+    en_tete = ["product_page_url", "upc", "title", "price_including_tax",
+               "price_excluding_tax",
+               "number_available",
                "category", "review_rating", "image_url", "product_description"]
 
     url = "http://books.toscrape.com/"
@@ -24,7 +27,6 @@ def extract_site():
     else:
         return print(f"Erreur de la requete numero {response.status_code}")
 
-
     liste_liens_category = []
     extract_total = []
     site_categories = soup.find("div", class_="side_categories")
@@ -32,7 +34,6 @@ def extract_site():
     ul_ = ul_side_categories.find("ul")
     li_ = ul_.find_all("li")
     for li in li_:
-
         a_ = li.find("a")
         a_ = a_["href"]
 
@@ -42,22 +43,19 @@ def extract_site():
         ext = extract_category(liste)
         nom_fichier = liste.split("/")[6]
         extract_total.append(ext)
-# ----------- Charagement du fichier csv -------------
+        # ----------- Charagement du fichier csv -------------
         os.makedirs("data_site", exist_ok=True)
         with open(f"data_site\{nom_fichier}.csv", "w", encoding="utf-8") as f:
-            writer = csv.writer(f,delimiter=",")
+            writer = csv.writer(f, delimiter=",")
             writer.writerow(en_tete)
             for ligne in ext:
                 writer.writerow(ligne)
 
-
-
     return extract_total
 
 
-#----------------------Fonction extraction d'une categorie---------------------------------------
+# ----------------------Fonction extraction d'une categorie---------------------------------------
 def extract_category(url):
-
     page = True
     i = 1
     liste_url_category = []
@@ -72,15 +70,13 @@ def extract_category(url):
 
             if i == 1:
                 url = url.rstrip("index.html")
-                url = url + f"page-{i+1}.html"
+                url = url + f"page-{i + 1}.html"
             else:
                 index = url.index("page")
                 url = url[:index]
                 url += f"page-{i}.html"
 
-
-            i+= 1
-
+            i += 1
 
             ol_class = soup.find("ol", class_="row")
             li_class = ol_class.find_all("li", class_="col-xs-6")
@@ -88,9 +84,9 @@ def extract_category(url):
                 a = li.find("a")
                 a = BASE_URL_category + a["href"].replace("../../../", "")
                 if not a in liste_url_category:
-                   liste_url_category.append(a)
-                   ex = extract_book(a)
-                   extr.append(ex)
+                    liste_url_category.append(a)
+                    ex = extract_book(a)
+                    extr.append(ex)
 
 
 
@@ -98,17 +94,11 @@ def extract_category(url):
         else:
             page = False
 
-
     return extr
 
 
-
-
-
-#------------------------Fonction extraction d'un livre----------------------------------------
+# ------------------------Fonction extraction d'un livre----------------------------------------
 def extract_book(url):
-
-
     response = requests.get(url)
     if response.status_code == 200:
         html = response.content
@@ -133,7 +123,6 @@ def extract_book(url):
     product_description = str(product_description_article.find("p", recursive=None))
     product_description = product_description.strip("<\p>")
 
-
     ul_breadcrumb = soup.find("ul", class_="breadcrumb")
     categorys = ul_breadcrumb.find_all("li")
     category = categorys[2].text.strip("\n")
@@ -146,26 +135,24 @@ def extract_book(url):
     balise_img = div_item.find("img")
     image_url_src = balise_img["src"]
     image_url = image_url_src.replace("../../", BASE_URL)
+
     os.makedirs("image", exist_ok=True)
     response_img = requests.get(image_url)
     # ----------- decoupe l'url et recupere la derniere parti pour en faire le nom de l'image -------------
-    nom_img = image_url.split("/")[-1]
+    image_url = title
+
+    filtre = filtered_string = re.sub(r'[^a-zA-Z0-9 ]', '', image_url)
+    nom_img = filtre
     if response_img.status_code == 200:
         with open(f"image\{nom_img}", "wb") as f:
             f.write(response_img.content)
     else:
         print(f"ERREUR, la requete de l'image a echoué, numéro {response_img}")
 
-
-
-
     infos_livre = [product_page_url, upc, title,
-                    price_including_tax, price_excluding_tax,number_available,
-                    category,review_rating,
+                   price_including_tax, price_excluding_tax, number_available,
+                   category, review_rating,
                    image_url, product_description]
-
-
-
 
     return infos_livre
 
