@@ -11,7 +11,7 @@ de chaque livre.
 Pour utiliser ce script, vous aurez besoin de:
 
     Un ordinateur avec Python 3 installé
-    Les modules Python suivants: requests, BeautifulSoup4, csv et os
+    Les modules Python suivants: requests, BeautifulSoup4, csv, os et re
     
 
 ***Utilisation avec un environnement virtuel***
